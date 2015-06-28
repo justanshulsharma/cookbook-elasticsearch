@@ -1,3 +1,6 @@
+[Chef::Recipe, Chef::Resource].each { |l| l.send :include, ::Extensions }
+Erubis::Context.send(:include, Extensions::Templates)
+
 require 'resolv'
 
 # Create ES config file
