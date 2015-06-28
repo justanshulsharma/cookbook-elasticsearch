@@ -21,7 +21,7 @@ user node.elasticsearch[:user] do
   shell   "/bin/bash"
   uid     node.elasticsearch[:uid]
   gid     node.elasticsearch[:user]
-  supports :manage_home => false
+  supports manage_home: false
   action  :create
   system true
 end
@@ -70,7 +70,7 @@ template "/etc/init.d/elasticsearch" do
 end
 
 service "elasticsearch" do
-  supports :status => true, :restart => true
+  supports status: true, restart: true
   action [ :enable ]
 end
 
@@ -81,7 +81,7 @@ ark_prefix_home = node.elasticsearch[:dir] || node.ark[:prefix_home]
 
 filename = node.elasticsearch[:filename] || "elasticsearch-#{node.elasticsearch[:version]}.tar.gz"
 download_url = node.elasticsearch[:download_url] || [node.elasticsearch[:host],
-                node.elasticsearch[:repository], filename].join('/')
+                                                     node.elasticsearch[:repository], filename].join('/')
 
 ark "elasticsearch" do
   url   download_url
@@ -111,7 +111,7 @@ bash "enable user limits" do
   user 'root'
 
   code <<-END.gsub(/^    /, '')
-    echo 'session    required   pam_limits.so' >> /etc/pam.d/su
+  echo 'session    required   pam_limits.so' >> /etc/pam.d/su
   END
 
   not_if { ::File.read("/etc/pam.d/su").match(/^session    required   pam_limits\.so/) }
@@ -119,8 +119,8 @@ end
 
 file "/etc/security/limits.d/10-elasticsearch.conf" do
   content <<-END.gsub(/^    /, '')
-    #{node.elasticsearch.fetch(:user, "elasticsearch")}     -    nofile    #{node.elasticsearch[:limits][:nofile]}
-    #{node.elasticsearch.fetch(:user, "elasticsearch")}     -    memlock   #{node.elasticsearch[:limits][:memlock]}
+  #{node.elasticsearch.fetch(:user, "elasticsearch")}     -    nofile    #{node.elasticsearch[:limits][:nofile]}
+  #{node.elasticsearch.fetch(:user, "elasticsearch")}     -    memlock   #{node.elasticsearch[:limits][:memlock]}
   END
 
   notifies :write, 'log[increase limits]', :immediately

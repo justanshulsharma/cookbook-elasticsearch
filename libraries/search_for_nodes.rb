@@ -31,10 +31,19 @@ module Extensions
   #     search_for_nodes(query, 'cloud.public_ipv4)
   #
   def search_for_nodes(query = nil, attribute = nil)
-    nodes = find_matching_nodes(query)
-    nodes.map do |node|
-      select_attribute(node, attribute)
-    end.sort
+    # nodes = find_matching_nodes(query)
+    # nodes.map do |node|
+    #   select_attribute(node, attribute)
+    # end.sort
+    require 'resolv'
+    nodes = search(:node, "name:*")
+    results = []
+    nodes.each do |node|
+      if node.attributes.attribute?(:private_ip) && node.attributes.private_ip && Resolv.getaddress(node.attributes.private_ip)
+        results << node.attributes.private_ip
+      end
+    end
+    results
   end
 
   def find_matching_nodes(query = nil)
