@@ -1,7 +1,15 @@
-[Chef::Recipe, Chef::Resource].each { |l| l.send :include, ::Extensions }
+
+
+
+
 Erubis::Context.send(:include, Extensions::Templates)
 
 require 'resolv'
+
+service "elasticsearch" do
+  supports status: true, restart: true
+  action [ :enable ]
+end
 
 # Create ES config file
 #
